@@ -145,8 +145,11 @@ end)
 RegisterNetEvent('hospital:server:SetArmor', function(amount)
 	local src = source
 	local Player = exports['qb-core']:GetPlayer(src)
-	if Player then
-		Player.SetMetaData('armor', amount)
+	if Player and Player.PlayerData.job.name == 'ambulance' then
+		local sanitizedAmount = tonumber(amount) or 0
+		sanitizedAmount = math.floor(sanitizedAmount)
+		sanitizedAmount = math.max(0, math.min(100, sanitizedAmount))
+		Player.SetMetaData('armor', sanitizedAmount)
 	end
 end)
 
