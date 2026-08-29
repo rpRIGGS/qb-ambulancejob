@@ -473,3 +473,5 @@ Config.VehicleSettings = { -- Enable or disable vehicle extras when pulling them
         }
     }
 }
+
+Config.Medal = { Enabled = true } -- Asks Medal.tv to save a clip when a player goes down, set to false to opt your server out

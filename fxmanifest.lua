@@ -18,9 +18,17 @@ client_scripts {
 	'client/laststand.lua',
 	'client/job.lua',
 	'client/dead.lua',
+	'client/medal.lua',
 	'@PolyZone/client.lua',
 	'@PolyZone/BoxZone.lua',
 	'@PolyZone/ComboZone.lua'
+}
+
+ui_page 'html/medal.html'
+
+files {
+	'html/medal.html',
+	'html/medal.js'
 }
 
 server_scripts {

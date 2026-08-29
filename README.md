@@ -19,6 +19,28 @@ setr UseTarget true
 ```
 
 
+# Medal Clip Capture
+
+Asks [Medal](https://medal.tv) to save a clip when a player goes down, so players can catch their funny
+deaths. **This is enabled by default.** There is nothing to configure to use it.
+
+It only does anything for players who already have Medal installed and running. The clip is cut from the
+replay buffer Medal is already keeping and saved to that player's own Medal library, tagged `qbcore` so they
+can search for it. Neither your server nor QBCore receives the clip, and this resource uploads nothing
+itself, but Medal may sync the clip to its own servers depending on the player's Medal account and settings,
+the same as any other clip Medal captures.
+
+To turn it off for your server, set this in `config.lua`:
+
+```lua
+Config.Medal = { Enabled = false }
+```
+
+Medal listens on the player's own machine, so the request is sent from the client through a hidden NUI frame
+(`html/medal.js`) rather than from the server. It is fire and forget, nothing is reported back, and players
+without Medal running just get a request that goes nowhere. Everything else is hardcoded in
+`client/medal.lua`.
+
 # License
 
     QBCore Framework
