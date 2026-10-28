@@ -301,12 +301,23 @@ RegisterNetEvent('hospital:server:resetHungerThirst', function()
 end)
 
 RegisterNetEvent('qb-ambulancejob:server:stash', function()
-	local src = source
-	local Player = exports['qb-core']:GetPlayer(src)
-	if not Player then return end
-	local citizenId = Player.PlayerData.citizenid
-	local stashName = 'ambulancestash_' .. citizenId
-	exports['qb-inventory']:OpenInventory(src, stashName)
+    local src = source
+    local Player = exports['qb-core']:GetPlayer(src)
+    if not Player then return end
+    local job = Player.PlayerData.job
+    if not job or not job.onduty then return end
+    local coords = GetEntityCoords(GetPlayerPed(src))
+    local authorized = false
+    for index, location in ipairs(Config.Locations['stash']) do
+        local allowed = Config.StashJobs[index]
+        if allowed and allowed[job.name] and #(coords - vector3(location.x, location.y, location.z)) <= 3.0 then
+            authorized = true
+            break
+        end
+    end
+    if not authorized then return end
+    local stashName = 'ambulancestash_' .. Player.PlayerData.citizenid
+    exports['qb-inventory']:OpenInventory(src, stashName)
 end)
 
 -- Callbacks
