@@ -3,6 +3,11 @@ local onDuty = false
 local currentGarage = 0
 local currentHospital
 
+local function CanUseStash(index)
+    local allowed = Config.StashJobs[index]
+    return allowed and PlayerJob and PlayerJob.onduty and allowed[PlayerJob.name] == true
+end
+
 -- Functions
 
 local function GetClosestPlayer()
@@ -477,7 +482,7 @@ if Config.UseTarget then
                         event = 'qb-ambulancejob:server:stash',
                         icon = 'fa fa-hand',
                         label = 'Open Stash',
-                        job = 'ambulance'
+                        job = 'pillboxmed'
                     }
                 },
                 distance = 1.5
@@ -570,7 +575,7 @@ else
 
         local stashCombo = ComboZone:Create(stashPoly, { name = 'stashCombo', debugPoly = false })
         stashCombo:onPlayerInOut(function(isPointInside)
-            if isPointInside and PlayerJob.name == 'ambulance' then
+            if isPointInside and CanUseStash(i) then
                 if onDuty then
                     exports['qb-core']:DrawText(Lang:t('text.pstash_button'), 'left')
                     EMSControls('stash')
