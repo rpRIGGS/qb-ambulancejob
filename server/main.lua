@@ -6,6 +6,14 @@ local doctorCount = 0
 local doctorCalled = false
 local Doctors = {}
 
+-- Medical treatment access is shared across EMS, Fire Rescue and Medical jobs.
+-- Department-specific facilities remain restricted separately by job name.
+local function IsMedicalOnDuty(Player)
+    if not Player or not Player.PlayerData or not Player.PlayerData.job then return false end
+    local job = Player.PlayerData.job
+    return job.onduty and (job.type == 'ems' or job.type == 'fire' or job.type == 'medical')
+end
+
 -- Events
 
 -- Compatibility with txAdmin Menu's heal options.
@@ -145,7 +153,7 @@ end)
 RegisterNetEvent('hospital:server:SetArmor', function(amount)
 	local src = source
 	local Player = exports['qb-core']:GetPlayer(src)
-	if Player and Player.PlayerData.job.name == 'ambulance' then
+	if IsMedicalOnDuty(Player) then
 		local sanitizedAmount = tonumber(amount) or 0
 		sanitizedAmount = math.floor(sanitizedAmount)
 		sanitizedAmount = math.max(0, math.min(100, sanitizedAmount))
@@ -158,7 +166,7 @@ RegisterNetEvent('hospital:server:TreatWounds', function(playerId)
 	local Player = exports['qb-core']:GetPlayer(src)
 	local Patient = exports['qb-core']:GetPlayer(playerId)
 	if Patient then
-		if Player.PlayerData.job.name == 'ambulance' then
+		if IsMedicalOnDuty(Player) then
 			exports['qb-inventory']:RemoveItem(src, 'bandage', 1, false, 'hospital:server:TreatWounds')
 			TriggerClientEvent('qb-inventory:client:ItemBox', src, sharedItems['bandage'], 'remove')
 			TriggerClientEvent('hospital:client:HealInjuries', Patient.PlayerData.source, 'full')
@@ -199,7 +207,7 @@ RegisterNetEvent('hospital:server:RevivePlayer', function(playerId, isOldMan)
 	local Patient = exports['qb-core']:GetPlayer(playerId)
 	local oldMan = isOldMan or false
 	if Patient then
-		if Player.PlayerData.job.name == 'ambulance' or QBCore.Functions.HasItem(src, 'firstaid', 1) then
+		if IsMedicalOnDuty(Player) or (Player and QBCore.Functions.HasItem(src, 'firstaid', 1)) then
 			if oldMan then
 				if Player.RemoveMoney('cash', 5000, 'revived-player') then
 					exports['qb-inventory']:RemoveItem(src, 'firstaid', 1, false, 'hospital:server:RevivePlayer')
@@ -367,7 +375,7 @@ end)
 QBCore.Commands.Add('status', Lang:t('info.check_health'), {}, false, function(source, _)
 	local src = source
 	local Player = exports['qb-core']:GetPlayer(src)
-	if Player.PlayerData.job.name == 'ambulance' then
+	if IsMedicalOnDuty(Player) then
 		TriggerClientEvent('hospital:client:CheckStatus', src)
 	else
 		TriggerClientEvent('QBCore:Notify', src, Lang:t('error.not_ems'), 'error')
@@ -377,7 +385,7 @@ end)
 QBCore.Commands.Add('heal', Lang:t('info.heal_player'), {}, false, function(source, _)
 	local src = source
 	local Player = exports['qb-core']:GetPlayer(src)
-	if Player.PlayerData.job.name == 'ambulance' then
+	if IsMedicalOnDuty(Player) then
 		TriggerClientEvent('hospital:client:TreatWounds', src)
 	else
 		TriggerClientEvent('QBCore:Notify', src, Lang:t('error.not_ems'), 'error')
@@ -387,7 +395,7 @@ end)
 QBCore.Commands.Add('revivep', Lang:t('info.revive_player'), {}, false, function(source, _)
 	local src = source
 	local Player = exports['qb-core']:GetPlayer(src)
-	if Player.PlayerData.job.name == 'ambulance' then
+	if IsMedicalOnDuty(Player) then
 		TriggerClientEvent('hospital:client:RevivePlayer', src)
 	else
 		TriggerClientEvent('QBCore:Notify', src, Lang:t('error.not_ems'), 'error')
