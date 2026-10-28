@@ -4,7 +4,6 @@ local QBCore = exports['qb-core']:GetCoreObject({ 'Functions', 'Commands' })
 local sharedItems = exports['qb-core']:GetShared('Items')
 local doctorCount = 0
 local doctorCalled = false
-local Doctors = {}
 
 -- Medical treatment access is shared across EMS, Fire Rescue and Medical jobs.
 -- Department-specific facilities remain restricted separately by job name.
@@ -12,6 +11,20 @@ local function IsMedicalOnDuty(Player)
     if not Player or not Player.PlayerData or not Player.PlayerData.job then return false end
     local job = Player.PlayerData.job
     return job.onduty and (job.type == 'ems' or job.type == 'fire' or job.type == 'medical')
+end
+
+local function GetHospitalStaffCount()
+    local count = 0
+    for _, player in pairs(QBCore.Functions.GetQBPlayers()) do
+        local job = player.PlayerData.job
+        if job and job.type == 'medical' and job.onduty then count = count + 1 end
+    end
+    return count
+end
+
+local function UpdateHospitalStaffCount()
+    doctorCount = GetHospitalStaffCount()
+    TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
 end
 
 -- Events
@@ -105,7 +118,7 @@ RegisterNetEvent('hospital:server:ambulanceAlert', function(text)
 	local coords = GetEntityCoords(ped)
 	local players = QBCore.Functions.GetQBPlayers()
 	for _, v in pairs(players) do
-		if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
+		if IsMedicalOnDuty(v) then
 			TriggerClientEvent('hospital:client:ambulanceAlert', v.PlayerData.source, coords, text)
 		end
 	end
@@ -174,31 +187,17 @@ RegisterNetEvent('hospital:server:TreatWounds', function(playerId)
 	end
 end)
 
-RegisterNetEvent('hospital:server:AddDoctor', function(job)
-	if job == 'ambulance' then
-		local src = source
-		doctorCount = doctorCount + 1
-		TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
-		Doctors[src] = true
-	end
+-- Compatibility events; authoritative job information is read from QBCore.
+RegisterNetEvent('hospital:server:AddDoctor', function()
+    UpdateHospitalStaffCount()
 end)
 
-RegisterNetEvent('hospital:server:RemoveDoctor', function(job)
-	if job == 'ambulance' then
-		local src = source
-		doctorCount = doctorCount - 1
-		TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
-		Doctors[src] = nil
-	end
+RegisterNetEvent('hospital:server:RemoveDoctor', function()
+    UpdateHospitalStaffCount()
 end)
 
 AddEventHandler('playerDropped', function()
-	local src = source
-	if Doctors[src] then
-		doctorCount = doctorCount - 1
-		TriggerClientEvent('hospital:client:SetDoctorCount', -1, doctorCount)
-		Doctors[src] = nil
-	end
+    SetTimeout(500, UpdateHospitalStaffCount)
 end)
 
 RegisterNetEvent('hospital:server:RevivePlayer', function(playerId, isOldMan)
@@ -243,7 +242,7 @@ RegisterNetEvent('hospital:server:SendDoctorAlert', function(hospitalName)
 		doctorCalled = true
 		local players = QBCore.Functions.GetQBPlayers()
 		for _, v in pairs(players) do
-			if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
+			if v.PlayerData.job.type == 'medical' and v.PlayerData.job.onduty then
 				TriggerClientEvent('QBCore:Notify', v.PlayerData.source, Lang:t('info.dr_needed', { hospital = hospitalName }), 'ambulance')
 			end
 		end
@@ -313,14 +312,7 @@ end)
 -- Callbacks
 
 QBCore.Functions.CreateCallback('hospital:GetDoctors', function(_, cb)
-	local amount = 0
-	local players = QBCore.Functions.GetQBPlayers()
-	for _, v in pairs(players) do
-		if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
-			amount = amount + 1
-		end
-	end
-	cb(amount)
+    cb(GetHospitalStaffCount())
 end)
 
 QBCore.Functions.CreateCallback('hospital:GetPlayerStatus', function(_, cb, playerId)
@@ -366,7 +358,7 @@ QBCore.Commands.Add('911e', Lang:t('info.ems_report'), { { name = 'message', hel
 	local coords = GetEntityCoords(ped)
 	local players = QBCore.Functions.GetQBPlayers()
 	for _, v in pairs(players) do
-		if v.PlayerData.job.name == 'ambulance' and v.PlayerData.job.onduty then
+		if IsMedicalOnDuty(v) then
 			TriggerClientEvent('hospital:client:ambulanceAlert', v.PlayerData.source, coords, message)
 		end
 	end
@@ -492,4 +484,4 @@ QBCore.Functions.CreateUseableItem('firstaid', function(source, item)
 	end
 end)
 
-exports('GetDoctorCount', function() return doctorCount end)
+exports('GetDoctorCount', function() return GetHospitalStaffCount() end)
