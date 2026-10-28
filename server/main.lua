@@ -5,19 +5,19 @@ local sharedItems = exports['qb-core']:GetShared('Items')
 local doctorCount = 0
 local doctorCalled = false
 
--- Medical treatment access is shared across EMS, Fire Rescue and Medical jobs.
+-- Medical treatment access is shared across EMS and Fire Rescue jobs.
 -- Department-specific facilities remain restricted separately by job name.
 local function IsMedicalOnDuty(Player)
     if not Player or not Player.PlayerData or not Player.PlayerData.job then return false end
     local job = Player.PlayerData.job
-    return job.onduty and (job.type == 'ems' or job.type == 'fire' or job.type == 'medical')
+    return job.onduty and (job.type == 'ems' or job.type == 'fire')
 end
 
 local function GetHospitalStaffCount()
     local count = 0
     for _, player in pairs(QBCore.Functions.GetQBPlayers()) do
         local job = player.PlayerData.job
-        if job and job.type == 'medical' and job.onduty then count = count + 1 end
+        if job and job.type == 'ems' and job.onduty then count = count + 1 end
     end
     return count
 end
@@ -242,7 +242,7 @@ RegisterNetEvent('hospital:server:SendDoctorAlert', function(hospitalName)
 		doctorCalled = true
 		local players = QBCore.Functions.GetQBPlayers()
 		for _, v in pairs(players) do
-			if v.PlayerData.job.type == 'medical' and v.PlayerData.job.onduty then
+			if v.PlayerData.job.type == 'ems' and v.PlayerData.job.onduty then
 				TriggerClientEvent('QBCore:Notify', v.PlayerData.source, Lang:t('info.dr_needed', { hospital = hospitalName }), 'ambulance')
 			end
 		end
