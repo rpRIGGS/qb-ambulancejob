@@ -19,6 +19,7 @@ client_scripts {
 	'client/job.lua',
 	'client/dead.lua',
 	'client/medal.lua',
+	'client/dutyblips.lua',
 	'@PolyZone/client.lua',
 	'@PolyZone/BoxZone.lua',
 	'@PolyZone/ComboZone.lua'
@@ -33,5 +34,6 @@ files {
 
 server_scripts {
 	'@oxmysql/lib/MySQL.lua',
-	'server/main.lua'
+	'server/main.lua',
+	'server/dutyblips.lua'
 }
