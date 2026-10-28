@@ -430,39 +430,4 @@ Config.Weapons = { -- Correspond weapon names to their class number
     [`WEAPON_SMOKEGRENADE`] = Config.WeaponClasses['SUFFOCATING'],
 }
 
-Config.VehicleSettings = { -- Enable or disable vehicle extras when pulling them from the ambulance job vehicle spawner
-    ['car1'] = {           -- Model name
-        ['extras'] = {
-            ['1'] = false, -- on/off
-            ['2'] = true,
-            ['3'] = true,
-            ['4'] = true,
-            ['5'] = true,
-            ['6'] = true,
-            ['7'] = true,
-            ['8'] = true,
-            ['9'] = true,
-            ['10'] = true,
-            ['11'] = true,
-            ['12'] = true,
-        }
-    },
-    ['car2'] = {
-        ['extras'] = {
-            ['1'] = false,
-            ['2'] = true,
-            ['3'] = true,
-            ['4'] = true,
-            ['5'] = true,
-            ['6'] = true,
-            ['7'] = true,
-            ['8'] = true,
-            ['9'] = true,
-            ['10'] = true,
-            ['11'] = true,
-            ['12'] = true,
-        }
-    }
-}
-
 Config.Medal = { Enabled = true } -- Asks Medal.tv to save a clip when a player goes down, set to false to opt your server out
