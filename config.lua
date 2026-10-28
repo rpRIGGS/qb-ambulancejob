@@ -431,3 +431,14 @@ Config.Weapons = { -- Correspond weapon names to their class number
 }
 
 Config.Medal = { Enabled = true } -- Asks Medal.tv to save a clip when a player goes down, set to false to opt your server out
+
+-- Duty blips: service controls color; vehicle state controls icon.
+-- GTA blip colors: 2 green, 1 red, 3 light blue.
+Config.DutyBlips = {
+    RefreshMs = 2000,
+    Services = {
+        ems = { color = 2 },
+        fire = { color = 1 },
+        medical = { color = 3 }
+    }
+}
