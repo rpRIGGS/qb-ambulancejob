@@ -437,8 +437,7 @@ Config.Medal = { Enabled = true } -- Asks Medal.tv to save a clip when a player 
 Config.DutyBlips = {
     RefreshMs = 2000,
     Services = {
-        ems = { color = 2 },
-        fire = { color = 1 },
-        medical = { color = 3 }
+        ems = { color = 3 },
+        fire = { color = 1 }
     }
 }
