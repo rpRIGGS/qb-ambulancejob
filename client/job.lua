@@ -92,29 +92,20 @@ RegisterNetEvent('ambulance:client:TakeOutVehicle', function(data)
     TakeOutVehicle(vehicle)
 end)
 
+-- Let the server recalculate hospital staffing from authoritative QBCore jobs.
+local function RefreshHospitalStaff()
+    TriggerServerEvent('hospital:server:AddDoctor')
+end
+
 RegisterNetEvent('QBCore:Client:OnPlayerUpdated', function(key, val)
     if key == 'job' then
-        local JobInfo = val
-        PlayerJob = JobInfo
-        if PlayerJob.name == 'ambulance' then
-            onDuty = PlayerJob.onduty
-            if PlayerJob.onduty then
-                TriggerServerEvent('hospital:server:AddDoctor', PlayerJob.name)
-            else
-                TriggerServerEvent('hospital:server:RemoveDoctor', PlayerJob.name)
-            end
-        end
-    elseif key == 'all' then
-        local JobInfo = val.job
-        PlayerJob = JobInfo
-        if PlayerJob.name == 'ambulance' then
-            onDuty = PlayerJob.onduty
-            if PlayerJob.onduty then
-                TriggerServerEvent('hospital:server:AddDoctor', PlayerJob.name)
-            else
-                TriggerServerEvent('hospital:server:RemoveDoctor', PlayerJob.name)
-            end
-        end
+        PlayerJob = val
+        onDuty = val.onduty
+        RefreshHospitalStaff()
+    elseif key == 'all' and val.job then
+        PlayerJob = val.job
+        onDuty = val.job.onduty
+        RefreshHospitalStaff()
     end
 end)
 
@@ -145,29 +136,21 @@ RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
                 TriggerServerEvent('hospital:server:SetDeathStatus', false)
                 TriggerServerEvent('hospital:server:SetLaststandStatus', false)
             end
-            if PlayerJob.name == 'ambulance' and onDuty then
-                TriggerServerEvent('hospital:server:AddDoctor', PlayerJob.name)
-            end
+            RefreshHospitalStaff()
         end)
     end)
 end)
 
 RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
-    if PlayerJob.name == 'ambulance' and onDuty then
-        TriggerServerEvent('hospital:server:RemoveDoctor', PlayerJob.name)
-    end
+    PlayerJob = {}
+    onDuty = false
+    TriggerServerEvent('hospital:server:RemoveDoctor')
 end)
 
 RegisterNetEvent('QBCore:Client:SetDuty', function(duty)
-    if PlayerJob.name == 'ambulance' and duty ~= onDuty then
-        if duty then
-            TriggerServerEvent('hospital:server:AddDoctor', PlayerJob.name)
-        else
-            TriggerServerEvent('hospital:server:RemoveDoctor', PlayerJob.name)
-        end
-    end
-
     onDuty = duty
+    -- QBCore may update the authoritative job just after this event.
+    SetTimeout(250, RefreshHospitalStaff)
 end)
 
 function Status()
