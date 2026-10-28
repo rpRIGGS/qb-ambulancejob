@@ -8,17 +8,16 @@ This version is intended to be modified and expanded to support PowerMoves RP's 
 
 **This repository is not intended to serve as a standard, general-purpose, or plug-and-play release of QBCore's qb-ambulancejob.**
 
-The planned modifications are designed around PowerMoves RP's custom QBCore environment, including support for three distinct job types:
+The modifications support two medical-capable QBCore job types:
 
-- **`ems`** — General EMS and legacy compatibility.
+- **`ems`** — Hospitals and medical facilities, including Pillbox, Sandy Shores, Paleto Bay, and Parsons.
 - **`fire`** — Fire Rescue agencies, including SAFR, LSFD, LSCFD, and BCFD.
-- **`medical`** — Hospitals and medical facilities, including Pillbox, Sandy Shores, Paleto Bay, and Parsons.
 
 Development will focus on preserving the original medical and emergency response functionality while expanding compatibility with multiple agencies and their respective personnel, ranks, certifications, and operational responsibilities.
 
 Planned customization includes medical treatment authorization, emergency response capabilities, hospital operations, on-duty personnel management, agency-specific access permissions, and integration with PowerMoves PSDispatch and PSMDT.
 
-Medical permissions may be determined by an employee's position, rank, or appropriate certification rather than job type alone.
+On-duty EMS and Fire Rescue personnel share medical treatment capabilities; departmental facilities and storage remain agency-specific.
 
 **These modifications are planned development objectives and should not be considered implemented or functional until completed and tested.**
 
