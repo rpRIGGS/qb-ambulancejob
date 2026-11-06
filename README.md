@@ -19,6 +19,19 @@ Planned customization includes medical treatment authorization, emergency respon
 
 On-duty EMS and Fire Rescue personnel share medical treatment capabilities; departmental facilities and storage remain agency-specific.
 
+## Planned Parsons Rehabilitation Center Integration
+
+The existing PowerMoves RP `qb-parsons` resource is being developed as a separate patient-admission and psychiatric-treatment system. This ambulancejob fork will provide its **planned** integration, without replacing or modifying the criminal jail workflow in `qb-policejob`.
+
+- Add separate `/commit` and `/uncommit` commands for **on-duty `ems` or `leo`** job types, with server-side validation and Parsons-specific events. These commands are **not yet implemented**.
+- Support clinician-initiated psychiatric holds, court-ordered commitments, hospital referrals, patient transport and handoff to Parsons, subject to PowerMoves RP law and roleplay policy.
+- Keep command access distinct from clinical/legal authorization. Not every EMS employee is automatically authorized to make a medical commitment, and transport responsibility does not itself confer clinical authority.
+- Preserve existing `/jail`, `/unjail`, criminal records, prison translations and prison-related behavior in `qb-policejob`.
+- Preserve this fork's existing planned **`ems` and `fire`** treatment functionality. Adding `leo` to the Parsons commands does not grant LEO general ambulance privileges; `fire` does not automatically receive Parsons commitment authority.
+
+**Development reference:** [Parsons — Policejob Code Patterns](development-reference/PARSONS-POLICEJOB-REFERENCE.md) documents the upstream command checks, client/server event flow, English locale references and integration checklist. It is a planning reference, not a completed implementation.
+
+
 **These modifications are planned development objectives and should not be considered implemented or functional until completed and tested.**
 
 This customized version may not function correctly on other FiveM servers without additional configuration or development.
